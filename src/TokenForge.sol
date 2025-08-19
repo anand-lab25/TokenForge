@@ -10,8 +10,12 @@ contract TokenForge {
     //error
     error ZeroDeposit();
     error InsufficientBalance();
+    error WithdrawFailed();
     //mapping
     mapping(address => uint256) public balanceOf;
+
+    //constructor
+    constructor() {}
 
     event Transfer(
         address indexed from,
@@ -19,6 +23,7 @@ contract TokenForge {
         uint256 totalAmount
     );
     event Deposit(address indexed to, uint256 totalAmount);
+    event Withdraw(address indexed from, uint256 amount);
 
     function deposit() public payable {
         if (msg.value == 0) revert ZeroDeposit();
@@ -35,6 +40,19 @@ contract TokenForge {
         balanceOf[to] += amount;
         emit Transfer(msg.sender, to, amount);
         return true;
+    }
+
+    function withdraw(uint256 amount) public {
+        if (balanceOf[msg.sender] < amount) revert InsufficientBalance();
+        balanceOf[msg.sender] -= amount;
+        (bool success, ) = msg.sender.call{value: amount}("");
+        if (!success) revert WithdrawFailed();
+        totalSupply -= amount;
+        emit Withdraw(msg.sender, amount);
+    }
+
+    function getTotalSupply() external view returns (uint256 amount) {
+        return totalSupply;
     }
 
     /// @notice Convenience: send ETH directly to mint.
