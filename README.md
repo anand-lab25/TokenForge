@@ -17,16 +17,14 @@ This repo is part of my journey to build audit-ready smart contract modules that
 
 ## 🧪 Testing Strategy
 
-Built with Foundry, the test suite reflects a stepwise, disciplined approach:
-Test cases are design to reflect real world edge case, revert correctness, and provide gas visiblity:
-fuzzing and event verification are layered in to simulate composability and audit readiness:
+Built with Foundry, the test suite reflects a disciplined, audit-conscious approach:
 
-- `testDeposit`: Validates ETH-to-token minting
-- `testTransfer`: Ensures correct balance updates
-- `testZeroDepositReverts`: Covers edge case with custom error
-- `testInsufficientTransferReverts`: Defensive programming for balance checks
+- **Edge Case Coverage**: Zero-value deposits, overdraft transfers, and failed ETH withdrawals.
+- **Custom Error Reverts**: Uses named errors (`ZeroDeposit`, `InsufficientBalance`, `WithdrawFailed`) for gas savings and audit clarity.
+- **Event Verification**: `vm.expectEmit` ensures correct indexing and payloads for `Deposit`, `Transfer`, and `Withdraw`.
+- **Fuzzing**: Randomized inputs simulate composability and stress test logic.
+- **Withdraw Logic**: Validates ETH return, supply reduction, and failure handling via `RevertingReceiver`.
 
-Tests are structured to signal clarity, coverage, and gas-aware design.
 
 ---
 
@@ -38,7 +36,7 @@ Tests are structured to signal clarity, coverage, and gas-aware design.
 | `transfer`    | 52,112  | Balance updates + event emission |
 | `balanceOf`   | 2,802   | Lightweight read |
 | `totalSupply` | 2,447   | Minimal internal accounting |
-## output
+### 🔍 Test Output
 xat2212@LAPTOP-MI26ITHQ:/mnt/c/Users/xat22/Documents/9781593271442/TokenForge$ forge test --gas-report 
 [⠰] Compiling...
 No files changed, compilation skipped
@@ -105,7 +103,6 @@ Ran 1 test suite in 88.11ms (53.81ms CPU time): 8 tests passed, 0 failed, 0 skip
 - Build composable primitives for DeFi protocols
 - Expand README with usage examples and audit notes
 
-
 ---
 
 ## 🧠 Signals to Recruiters
@@ -119,7 +116,13 @@ This repo showcases:
 
 ---
 
+## ⚖️ Design Tradeoffs
+
+- **No ERC-20 Inheritance**: Chose internal accounting for clarity and control over minting logic.
+- **ETH-backed tokens**: Prioritized simplicity and auditability over speculative tokenomics.
+- **Custom Errors over require()**: Improves gas efficiency and audit traceability.
+
 ## 🧑‍💻 Author
 
-Built by [anand]([text](https://github.com/anand-lab25/TokenForge)), focused on .
+Built by [anand-lab25](https://github.com/anand-lab25), maintained by James—a protocol engineer in training focused on Solidity, EVM mechanics, and audit-ready smart contract modules.
 
